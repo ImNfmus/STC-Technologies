@@ -1,7 +1,0 @@
-{
-  "name": "STC Technologies - Professional Security Installation",
-  "description": "High-converting website for STC Technologies, specializing in security cameras, NVR systems, and smart home security integrations.",
-  "requestFramePermissions": [
-    "geolocation"
-  ]
-}
