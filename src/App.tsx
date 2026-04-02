@@ -540,7 +540,19 @@ Message: ${formData.message}
     `.trim();
 
     const mailtoUrl = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    window.location.href = mailtoUrl;
+    
+    // Use a hidden anchor tag to trigger the mailto - more reliable in many browsers
+    const link = document.createElement('a');
+    link.href = mailtoUrl;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    
+    // Small delay before removing to ensure the browser processes the click
+    setTimeout(() => {
+      document.body.removeChild(link);
+    }, 100);
+
     setSubmitted(true);
   };
 
@@ -548,6 +560,8 @@ Message: ${formData.message}
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
+
+  const mailtoUrl = `mailto:${EMAIL_ADDRESS}?subject=${encodeURIComponent(`New Quote Request from ${formData.name}`)}&body=${encodeURIComponent(`Name: ${formData.name}\nPhone: ${formData.phone}\nEmail: ${formData.email}\nService: ${formData.service}\nMessage: ${formData.message}`)}`;
 
   return (
     <section id="quote" className="py-24 bg-slate-900">
@@ -601,16 +615,24 @@ Message: ${formData.message}
                   <div className="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center">
                     <CheckCircle2 className="w-10 h-10 text-green-500" />
                   </div>
-                  <h4 className="text-2xl font-bold text-white">Request Sent!</h4>
+                  <h4 className="text-2xl font-bold text-white">Action Required</h4>
                   <p className="text-slate-400">
-                    Your email client should have opened with your request. If not, please click the button below to try again.
+                    Your email app should have opened with the quote details. <strong>Please click "Send" in your email app</strong> to deliver the request to us.
                   </p>
-                  <button 
-                    onClick={() => setSubmitted(false)}
-                    className="text-white underline hover:text-slate-200 transition-colors"
-                  >
-                    Send another request
-                  </button>
+                  <div className="flex flex-col gap-4 w-full">
+                    <a 
+                      href={mailtoUrl}
+                      className="w-full bg-white hover:bg-slate-200 text-slate-950 py-4 rounded-xl font-bold text-lg transition-all shadow-xl shadow-white/10"
+                    >
+                      Open Email App Again
+                    </a>
+                    <button 
+                      onClick={() => setSubmitted(false)}
+                      className="text-slate-400 underline hover:text-white transition-colors text-sm"
+                    >
+                      Back to form
+                    </button>
+                  </div>
                 </motion.div>
               ) : (
                 <form className="space-y-6" onSubmit={handleSubmit}>
